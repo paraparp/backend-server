@@ -1,11 +1,23 @@
 //Requires
 var express = require('express');
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
 var bodyParser = require('body-parser');
 
 
 //Inicializar variables
 var app = express();
+
+//CORS
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "POST, GET, PUT , DELETE", "OPTIONS");
+  next();
+});
 
 
 //Body parser
