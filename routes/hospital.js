@@ -7,7 +7,40 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 var app = express();
 
 var Hospital = require('../models/hospital');
+// ==========================================
+// Obtener hospital por id
+// ==========================================
 
+app.get('/:id', (req, res) => {
+
+  var id = req.params.id;
+
+  Hospital.findById(id).populate('hospital', 'nombr img email')
+    .exec((err, hospital) => {
+
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          mensaje: 'Error buscando hospital',
+          errors: err
+        });
+      }
+
+      if (!hospital) {
+        return res.status(400).json({
+          ok: false,
+          mensaje: 'No existe hospital con ID: ' + id,
+          errors: err
+        });
+      }
+
+      res.status(200).json({
+        ok: true,
+        hospital: hospital
+      });
+    })
+
+})
 
 // ==========================================
 // Obtener todos los hospitales
@@ -19,7 +52,7 @@ app.get('/', (req, res, next) => {
 
 
   Hospital.find({})
-    .populate('usuario', 'nombre email')
+    .populate('hospital', 'nombre email')
     .skip(desde)
     .limit(5)
     .exec(
@@ -56,7 +89,7 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
   var hospital = new Hospital({
     nombre: body.nombre,
     img: body.img,
-    usuario: req.usuario._id
+    hospital: req.hospital._id
   });
 
   hospital.save((err, hospitalGuardado) => {
@@ -135,7 +168,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
 
 // ============================================
-//   Borrar un usuario por el id
+//   Borrar un hospital por el id
 // ============================================
 app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
